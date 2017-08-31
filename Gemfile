@@ -58,4 +58,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'materialize-sass'
 gem 'dynabute'
 gem 'cocoon'
+gem 'slim-rails'
 
