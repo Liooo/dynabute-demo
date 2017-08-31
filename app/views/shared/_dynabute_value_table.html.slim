@@ -1,0 +1,25 @@
+- model_name = model_class.to_s.downcase
+- fields = model_class.dynabutes
+
+table.table.table-striped
+  thead
+    tr
+      - model_attrs.each do |attr|
+        th= model_class.human_attribute_name(attr)
+      - fields.each do |field|
+        th = field.name
+      th=t '.actions', :default => t("helpers.actions")
+  tbody
+    - records.each do |record|
+      tr
+        - model_attrs.each do |attr|
+          td= record.send(attr)
+        - fields.each do |field|
+          td= dynabute_value_text(record.dynabute_value(field: field), field)
+        td
+          = link_to t('.show', :default => t("helpers.links.show")), send("#{model_name}_path", record), :class => 'btn btn-default btn-xs'
+          '
+          = link_to t('.edit', :default => t("helpers.links.edit")), send("edit_#{model_name}_path", record), :class => 'btn btn-default btn-xs'
+          '
+          = link_to t('.destroy', :default => t("helpers.links.destroy")), send("#{model_name}_path", record), :method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-xs btn-danger'
+
