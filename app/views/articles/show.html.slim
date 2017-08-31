@@ -1,15 +1,22 @@
-p#notice = notice
+- model_class = Article
+.page-header
+  h1=t '.title', :default => model_class.model_name.human.titleize
 
 p
-  strong Title:
+  strong= model_class.human_attribute_name(:title) + ':'
+  br
   = @article.title
 p
-  strong Body:
+  strong= model_class.human_attribute_name(:body) + ':'
+  br
   = @article.body
 p
-  strong User:
-  = @article.user
+  strong= model_class.human_attribute_name(:user_id) + ':'
+  br
+  = @article.user_id
 
-= link_to 'Edit', edit_article_path(@article)
-'  |
-= link_to 'Back', articles_path
+= link_to t('.back', :default => t("helpers.links.back")), articles_path, :class => 'btn btn-default'
+'
+= link_to t('.edit', :default => t("helpers.links.edit")), edit_article_path(@article), :class => 'btn btn-default'
+'
+= link_to t('.destroy', :default => t("helpers.links.destroy")), article_path(@article), :method => "delete", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-danger'

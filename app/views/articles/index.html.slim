@@ -1,25 +1,28 @@
-h1 Listing articles
-
-table
+- model_class = Article
+.page-header
+  h1=t '.title', :default => model_class.model_name.human.pluralize.titleize
+= link_to t('.new', :default => t("helpers.links.new")), new_article_path, :class => 'btn btn-primary'
+table.table.table-striped
   thead
     tr
-      th Title
-      th Body
-      th User
-      th
-      th
-      th
-
+      th= model_class.human_attribute_name(:id)
+      th= model_class.human_attribute_name(:title)
+      th= model_class.human_attribute_name(:body)
+      th= model_class.human_attribute_name(:user_id)
+      th= model_class.human_attribute_name(:created_at)
+      th=t '.actions', :default => t("helpers.actions")
   tbody
     - @articles.each do |article|
       tr
-        td = article.title
-        td = article.body
-        td = article.user
-        td = link_to 'Show', article
-        td = link_to 'Edit', edit_article_path(article)
-        td = link_to 'Destroy', article, data: { confirm: 'Are you sure?' }, method: :delete
+        td= link_to article.id, article_path(article)
+        td= article.title
+        td= article.body
+        td= article.user_id
+        td=l article.created_at
+        td
+          = link_to t('.show', :default => t("helpers.links.show")), article_path(article), :class => 'btn btn-default btn-xs'
+          '
+          = link_to t('.edit', :default => t("helpers.links.edit")), edit_article_path(article), :class => 'btn btn-default btn-xs'
+          '
+          = link_to t('.destroy', :default => t("helpers.links.destroy")), article_path(article), :method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-xs btn-danger'
 
-br
-
-= link_to 'New Article', new_article_path
