@@ -55,11 +55,11 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem "twitter-bootstrap-rails"
+gem 'twitter-bootstrap-rails'
 gem 'dynabute'
 gem 'cocoon'
 gem 'slim-rails'
 gem 'simple_form'
 gem 'therubyracer'
-gem "less-rails"
-
+gem 'less-rails'
+gem 'kaminari'

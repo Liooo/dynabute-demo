@@ -64,7 +64,7 @@ GEM
     coffee-script-source (1.12.2)
     commonjs (0.2.7)
     concurrent-ruby (1.0.5)
-    dynabute (0.0.9)
+    dynabute (0.0.10)
       activerecord (>= 4.2.8)
     erubi (1.6.1)
     execjs (2.7.0)
@@ -75,6 +75,18 @@ GEM
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
+    kaminari (1.0.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.0.1)
+      kaminari-activerecord (= 1.0.1)
+      kaminari-core (= 1.0.1)
+    kaminari-actionview (1.0.1)
+      actionview
+      kaminari-core (= 1.0.1)
+    kaminari-activerecord (1.0.1)
+      activerecord
+      kaminari-core (= 1.0.1)
+    kaminari-core (1.0.1)
     less (2.6.0)
       commonjs (~> 0.2.7)
     less-rails (2.8.0)
@@ -221,6 +233,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   dynabute
   jbuilder (~> 2.5)
+  kaminari
   less-rails
   listen (>= 3.0.5, < 3.2)
   pry
