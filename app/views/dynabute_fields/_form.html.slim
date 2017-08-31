@@ -1,0 +1,8 @@
+= simple_form_for(@dynabute_field, url: dynabute_fields_path(@target_model))  do |f|
+  = f.error_notification
+  = f.hidden_field :target_model
+  = f.input :name
+  = f.input :value_type, collection: Dynabute::Field::TYPES
+  = f.input :has_many
+  
+  = f.button :submit

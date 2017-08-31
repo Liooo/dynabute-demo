@@ -2,5 +2,7 @@ Rails.application.routes.draw do
   root :to => 'users#index'
   resources :articles
   resources :users
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  scope path: '(:target_model)', shallow_path: '(:target_model)' do
+    resources :dynabute_fields
+  end
 end

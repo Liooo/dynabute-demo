@@ -1,0 +1,2 @@
+module DynabutesHelper
+end

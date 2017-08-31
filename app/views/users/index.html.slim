@@ -1,7 +1,6 @@
 - model_class = User
 .page-header
   h1=t '.title', :default => model_class.model_name.human.pluralize.titleize
-= link_to t('.new', :default => t("helpers.links.new")), new_user_path, :class => 'btn btn-primary'
 table.table.table-striped
   thead
     tr
@@ -22,3 +21,4 @@ table.table.table-striped
           '
           = link_to t('.destroy', :default => t("helpers.links.destroy")), user_path(user), :method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-xs btn-danger'
 
+= link_to t('.new', :default => t("helpers.links.new")), new_user_path, :class => 'btn btn-primary'

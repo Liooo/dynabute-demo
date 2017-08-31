@@ -1,8 +1,6 @@
 = simple_form_for @article, :html => { :class => "form-horizontal" } do |f|
   = f.input :title
-  = f.error_span(:title)
   = f.input :body
-  = f.error_span(:body)
   = f.button :submit, :class => 'btn-primary'
   '
   = link_to t('.cancel', :default => t("helpers.links.cancel")), articles_path, :class => 'btn btn-default'
