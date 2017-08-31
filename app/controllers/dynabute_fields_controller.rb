@@ -68,7 +68,14 @@ class DynabuteFieldsController < ApplicationController
     end
 
     def dynabute_params
-      params.fetch(:dynabute_field, {}).permit(:id, :name, :target_model, :value_type, :has_many)
+      params.fetch(:dynabute_field, {}).permit(
+        :id,
+        :name,
+        :target_model,
+        :value_type,
+        :has_many,
+        options_attributes: [:id, :label]
+      )
     end
 
     def target_model

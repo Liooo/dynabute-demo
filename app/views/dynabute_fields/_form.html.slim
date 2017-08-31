@@ -1,8 +1,31 @@
-= simple_form_for(@dynabute_field, url: dynabute_fields_path(@target_model))  do |f|
+= simple_form_for(@dynabute_field)  do |f|
   = f.error_notification
   = f.hidden_field :target_model
   = f.input :name
-  = f.input :value_type, collection: Dynabute::Field::TYPES
+  #value_type= f.input :value_type, collection: Dynabute::Field::TYPES
   = f.input :has_many
-  
-  = f.button :submit
+
+  #options.row[style="margin-bottom: 30px;"]
+    .col-lg-offset-1.col-lg-11
+      h3 options
+      = f.simple_fields_for :options do |option|
+        = render 'option_fields', f: option
+      .links
+        = link_to_add_association 'add option', f, :options, class: 'btn btn-info btn-xs'
+
+  = f.button :submit, class: 'btn-primary'
+
+  javascript:
+    const value_type = $('#value_type select'),
+          options = $('#options');
+
+    const set_options_visibility = ($elem) => {
+      if($elem.val() == 'select'){
+        options.show()
+      } else {
+        options.hide()
+      }
+    }
+    value_type.change(function(){ set_options_visibility($(this)) })
+    set_options_visibility(value_type)
+
