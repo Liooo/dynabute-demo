@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170831044556) do
+ActiveRecord::Schema.define(version: 20170831145343) do
 
   create_table "articles", force: :cascade do |t|
     t.string "title"
@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 20170831044556) do
     t.integer "field_id", limit: 4
     t.integer "dynabutable_id", limit: 4
     t.string "dynabutable_type", limit: 50
-    t.boolean "value"
+    t.datetime "value"
     t.index ["dynabutable_id", "field_id"], name: "dynabute_datetime_values_on_record_id_and_recordable_id"
     t.index ["dynabutable_id"], name: "dynabute_datetime_values_on_recordable_id"
   end

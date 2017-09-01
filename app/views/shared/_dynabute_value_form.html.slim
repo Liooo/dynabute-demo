@@ -1,0 +1,16 @@
+.dynamic-record-form
+  - fields.each_with_index do |field, idx|
+    - value = f.object.dynabute_value(field: field)
+    = f.simple_fields_for "dynabute_values_attributes[]", value.present? ? value : f.object.build_dynabute_value(field: field) do |ff|
+      - if field.has_many
+        .row
+          .col-lg-10
+            == render partial: 'shared/dynabute_value_field', locals: {form: ff, field: field}
+        /  .col-lg-2
+        /    = link_to_remove_association "add #{field.name}", f, class: 'btn btn-danger btn-xs'
+        /.row
+        /  .links
+        /    = link_to_add_association "add #{field.name}", f, :options, class: 'btn btn-info btn-xs'
+      - else
+        .row
+          .col-lg-12== render partial: 'shared/dynabute_value_field', locals: {form: ff, field: field}

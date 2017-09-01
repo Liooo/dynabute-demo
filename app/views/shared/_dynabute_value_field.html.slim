@@ -1,0 +1,11 @@
+.dynabute_value_field
+  = form.input :id, as: :hidden
+  = form.input :field_id, input_html: {value: field.id}, as: :hidden
+  - case field.value_type
+  - when 'datetime'
+    |-
+  - when 'select'
+    = form.input :value, label: field.name, collection: field.options, value_method: :id, label_method: :label, input_html: { multiple: field.has_many }
+  - else
+    = form.input :value, label: field.name
+
