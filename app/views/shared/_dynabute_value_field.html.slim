@@ -1,11 +1,14 @@
-.dynabute_value_field
-  = form.input :id, as: :hidden
-  = form.input :field_id, input_html: {value: field.id}, as: :hidden
-  - case field.value_type
-  - when 'datetime'
-    |-
-  - when 'select'
-    = form.input :value, label: field.name, collection: field.options, value_method: :id, label_method: :label, input_html: { multiple: field.has_many }
-  - else
-    = form.input :value, label: field.name
-
+.row.nested-fields.vertical-middle
+  .col-lg-10
+    = f.input :id, as: :hidden
+    = f.input :field_id, input_html: {value: field.id}, as: :hidden
+    - case field.value_type
+    /- when 'datetime'
+    /  |-
+    - when 'select'
+      = f.input :value, label: field.name, collection: field.options, value_method: :id, label_method: :label, input_html: { multiple: field.has_many }
+    - else
+      = f.input :value, label: field.name
+  - if field.has_many
+    .col-lg-2
+      = link_to_remove_association "remove #{field.name}", f, class: 'btn btn-danger btn-xs'

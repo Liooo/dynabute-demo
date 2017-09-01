@@ -5,3 +5,8 @@
  *= require_self
  *= require_tree .
 */
+
+.vertical-middle{
+  display: flex;
+  align-items: center;
+}
