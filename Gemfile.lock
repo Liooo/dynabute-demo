@@ -1,3 +1,16 @@
+GIT
+  remote: https://github.com/Liooo/cocoon.git
+  revision: 89c3c9d0ef6618dbcb017722b159b5d300582940
+  specs:
+    cocoon (1.2.10)
+
+GIT
+  remote: https://github.com/Liooo/dynabute.git
+  revision: 59de9566db258b04b5ccefc6388dbd954f177355
+  specs:
+    dynabute (0.0.14)
+      activerecord (>= 4.2.8)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -53,7 +66,6 @@ GEM
       xpath (~> 2.0)
     childprocess (0.7.1)
       ffi (~> 1.0, >= 1.0.11)
-    cocoon (1.2.10)
     coderay (1.1.1)
     coffee-rails (4.2.2)
       coffee-script (>= 2.2.0)
@@ -64,8 +76,6 @@ GEM
     coffee-script-source (1.12.2)
     commonjs (0.2.7)
     concurrent-ruby (1.0.5)
-    dynabute (0.0.10)
-      activerecord (>= 4.2.8)
     erubi (1.6.1)
     execjs (2.7.0)
     ffi (1.9.18)
@@ -118,6 +128,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.5.0)
+      byebug (~> 9.1)
+      pry (~> 0.10)
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.0)
@@ -229,14 +242,14 @@ PLATFORMS
 DEPENDENCIES
   byebug
   capybara (~> 2.13)
-  cocoon
+  cocoon!
   coffee-rails (~> 4.2)
-  dynabute
+  dynabute!
   jbuilder (~> 2.5)
   kaminari
   less-rails
   listen (>= 3.0.5, < 3.2)
-  pry
+  pry-byebug
   pry-rails
   puma (~> 3.7)
   rails (~> 5.1.3)
