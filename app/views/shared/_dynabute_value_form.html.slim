@@ -1,7 +1,7 @@
 .dynamic-record-form
   - fields.each_with_index do |field, idx|
     - value = f.object.dynabute_value(field: field)
-    = f.simple_fields_for "dynabute_values_attributes[]", value.present? ? value : f.object.build_dynabute_value(field: field) do |ff|
+    = f.simple_fields_for "dynabute_values_attributes[#{idx}]", value.present? ? value : f.object.build_dynabute_value(field: field) do |ff|
       - if field.has_many
         .row
           .col-lg-10
