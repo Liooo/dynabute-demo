@@ -11,6 +11,7 @@ export class DynabuteValueField extends React.Component{
 
   onChange(e, idx = null){
     const value = this.extractValue(e, idx)
+    console.log("changed to ", value)
     this.props.onChange(this.props.field.id, value)
   }
 
@@ -19,8 +20,8 @@ export class DynabuteValueField extends React.Component{
     switch(valueType) {
       case 'select':
         return hasMany ?
-          [...e.target.options].filter((o) => o.selected).map((o) => o.value) :
-          e.target.value
+          [...e.target.options].filter((o) => o.selected).map((o) => parseInt(o.value)) :
+          parseInt(e.target.value)
       default:
         if(!hasMany) return e.target.value;
         const val = this.props.value.slice();
@@ -45,8 +46,9 @@ export class DynabuteValueField extends React.Component{
   }
 
   renderField(field){
-    const elemId = `field-${field.id}`
     const {id, name, options, value_type: valueType, has_many: hasMany} = field
+    const elemId = `field-${id}`;
+    const value = this.props.value
     switch(valueType){
       case 'integer':
       case 'string':
@@ -59,7 +61,7 @@ export class DynabuteValueField extends React.Component{
                 <fieldset>
                   <legend>{name}</legend>
                   {
-                    this.props.value.map((v, idx) => (
+                    value.map((v, idx) => (
                       <div className="row"  key={idx}>
                         <div className="col-lg-3 form-group">
                           <input type={type} className="form-control" value={v} onChange={(e) => this.onChange(e, idx)}/>
@@ -95,8 +97,9 @@ export class DynabuteValueField extends React.Component{
             <label htmlFor={elemId}>{name}</label>
             <select className="form-control" id={elemId} name="number"
                     multiple={hasMany}
+                    value={value}
                     onChange={this.onChange} >
-              {options.map((o) => <option value={o.id} key={o.id}>{o.label}</option>)}
+              {options.map((o) => <option value={o.id} key={o.id} >{o.label}</option> )}
             </select>
           </div>
         )

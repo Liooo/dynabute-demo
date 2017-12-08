@@ -8,40 +8,49 @@ class DynabuteValueForm extends React.Component {
     super(props)
     this.state = {fields: [], obj: {}, dynabuteValues: {}}
 
-    Promise.all([fetch('/dynabute_fields.json?target_model=user'), fetch('/users/6.json')])
-      .then((resps) => Promise.all(resps.map((r) => r.json())))
+    Promise.all([$.getJSON('/dynabute_fields.json?target_model=user'), $.getJSON('/users/6.json')])
       .then((data) => {
-        const fields = data[0], obj = data[1]
-        this.originalDvalues = Object.assign({}, obj.dynabute_values)
+        const fields = data[0], obj = data[1];
+        this.originalDvalues = obj.dynabute_values.slice();
         const dynabuteValues = this.toDvalueState(obj.dynabute_values, fields);
         delete obj.dynabute_values
         this.setState({fields, obj, dynabuteValues})
       });
 
     this.onChange = this.onChange.bind(this)
-    this.onRemove = this.onRemove.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
   onSubmit(){
-    map(this.state.fields, (f)=>{
-      const newValue = this.state.dynabuteValues[f.id]
-      if(!f.has_many) {
-        const origDvalue = this.originalDvalues.find((v) => v.field_id == f.id)
-        const newDvalParams = Object.assign(origDvalue, {value: newValue})
-        return newDvalParams
-      } else {
-        const origDvalue = this.originalDvalues.filter((v) => v.field_id == f.id)
-        const newDvalParams = []
-        newValue.forEach((v)=>{
-          if (origDvalue) {
-          }
-        })
-      }
+    const dParams = this.toDvalueParams(this.state.fields, this.state.dynabuteValues);
+    const params = {user: {
+      dynabute_values_attributes: dParams
+    }}
+    $.ajax(`/users/${this.state.obj.id}`, {method: 'patch', data: params}).then(()=>{
+      location.href = '/users'
     })
   }
 
-  toDynabuteValueParams(stateValues){
-    map(stateValues, (v, k)=>{ })
+  toDvalueParams(fields, values){
+    return _(fields).map((f)=>{
+      const newValue = values[f.id]
+      if(f.has_many) {
+        const origDvalue = this.originalDvalues.filter((v) => v.field_id == f.id)
+        const added = _.difference(newValue, origDvalue.map((d) => d.value))
+        const removed = _.difference(origDvalue.map((d) => d.value), newValue)
+        return [
+          ...origDvalue.map((d) => {
+            if(removed.includes(d.value)) { d._destroy = true; }
+            return d;
+          }),
+          ...added.map((value) => ({field_id: f.id, value}))
+        ]
+      } else {
+        if(!newValue) { return null; }
+        const origDvalue = this.originalDvalues.find((v) => v.field_id == f.id) || {};
+        return Object.assign(origDvalue, {value: newValue, field_id: f.id});
+      }
+    }).flatten().compact().value();
   }
 
   toDvalueState(rawValues, fields) {
@@ -58,19 +67,7 @@ class DynabuteValueForm extends React.Component {
     }, {})
   }
 
-  onRemove(fieldId, idx) {
-    const value = this.state.dynabuteValues[fieldId].slice();
-    value.splice(idx, 1);
-    const newValues = Object.assign(this.state.dynabuteValues, {[fieldId]: value});
-    this.setState({dynabuteValues: newValues})
-  }
-
-  onAdd(fieldId) {
-    const obj = this.state.obj.dynabute_values
-    obj.dynabute_values.push({field_id: fieldId, value: ''})
-  }
-
-  onChange(fieldId, values){
+  onChange(fieldId, values) {
     const newValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
     this.setState({dynabuteValues: newValues})
   }
@@ -85,7 +82,7 @@ class DynabuteValueForm extends React.Component {
           </div>
           {
             this.state.fields.map((f, i)=>(
-              <div style={{marginBottom: 20}} key={f.id}>
+              <div style={{marginBottom: 30}} key={f.id}>
                 <DynabuteValueField
                   field={f}
                   value={this.state.dynabuteValues[f.id]}
@@ -105,6 +102,5 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <DynabuteValueForm/>,
     document.getElementById('dynabute-form')
-    // document.body.appendChild(document.createElement('div'))
   )
 })
