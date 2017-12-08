@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { DynabuteValueField } from './field'
+import {map} from 'lodash'
 
-class DynabuteValueForm extends React.Component{
+class DynabuteValueForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {fields: [], obj: {}, dynabuteValues: {}}
@@ -11,7 +12,8 @@ class DynabuteValueForm extends React.Component{
       .then((resps) => Promise.all(resps.map((r) => r.json())))
       .then((data) => {
         const fields = data[0], obj = data[1]
-        const dynabuteValues = this.buildDynabuteHash(obj.dynabute_values, fields);
+        this.originalDvalues = Object.assign({}, obj.dynabute_values)
+        const dynabuteValues = this.toDvalueState(obj.dynabute_values, fields);
         delete obj.dynabute_values
         this.setState({fields, obj, dynabuteValues})
       });
@@ -20,7 +22,29 @@ class DynabuteValueForm extends React.Component{
     this.onRemove = this.onRemove.bind(this)
   }
 
-  buildDynabuteHash(rawValues, fields) {
+  onSubmit(){
+    map(this.state.fields, (f)=>{
+      const newValue = this.state.dynabuteValues[f.id]
+      if(!f.has_many) {
+        const origDvalue = this.originalDvalues.find((v) => v.field_id == f.id)
+        const newDvalParams = Object.assign(origDvalue, {value: newValue})
+        return newDvalParams
+      } else {
+        const origDvalue = this.originalDvalues.filter((v) => v.field_id == f.id)
+        const newDvalParams = []
+        newValue.forEach((v)=>{
+          if (origDvalue) {
+          }
+        })
+      }
+    })
+  }
+
+  toDynabuteValueParams(stateValues){
+    map(stateValues, (v, k)=>{ })
+  }
+
+  toDvalueState(rawValues, fields) {
     return fields.reduce((hash, f) => {
       let value;
       if(f.has_many) {
@@ -54,22 +78,23 @@ class DynabuteValueForm extends React.Component{
   render(){
     return (
       <div>
-        <form action="/users" method="post">
+        <form>
           <div className="form-group">
             <label htmlFor="user">Name:</label>
             <input type="text" className="form-control" id="user" />
           </div>
           {
             this.state.fields.map((f, i)=>(
-              <DynabuteValueField
-                key={f.id}
-                field={f}
-                value={this.state.dynabuteValues[f.id]}
-                onChange={this.onChange}
-                onRemove={this.onRemove}
-              />
+              <div style={{marginBottom: 20}} key={f.id}>
+                <DynabuteValueField
+                  field={f}
+                  value={this.state.dynabuteValues[f.id]}
+                  onChange={this.onChange}
+                />
+              </div>
             ))
           }
+          <button type="button" className="btn btn-primary" onClick={this.onSubmit}>yo</button>
         </form>
       </div>
     )
