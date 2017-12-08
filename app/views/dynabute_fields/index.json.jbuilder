@@ -1,1 +1,1 @@
-json.array! @dynabute_fields, partial: 'dynabutes/dynabute', as: :dynabute
+json.array! @dynabute_fields, partial: 'field', as: :field
