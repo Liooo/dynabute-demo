@@ -1,4 +1,4 @@
 - model_class = Dynabute::Field
 .page-header
-  h1=t '.title', :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize
+  h1="New Dynabute Field for #{@target_model.classify}"
 = render :partial => "form"

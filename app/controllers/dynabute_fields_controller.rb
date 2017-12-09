@@ -1,6 +1,6 @@
 class DynabuteFieldsController < ApplicationController
   before_action :set_dynabute, only: [:show, :destroy]
-  before_action :set_target_model, only: [:index]
+  before_action :set_target_model, only: [:index, :new]
   ALLOWED_MODELS = %w(user article)
 
   # GET /dynabute_fields
