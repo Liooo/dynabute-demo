@@ -7,27 +7,22 @@ import {flatten} from 'lodash'
 class DynabuteValueForm extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {fields: [], obj: {}, dynabuteValues: {}}
 
-    Promise.all([$.getJSON('/dynabute_fields.json?target_model=user'), $.getJSON('/users/6.json')])
-      .then((data) => {
-        const fields = data[0], obj = data[1];
-        this.originalDvalues = obj.dynabute_values.slice();
-        const dynabuteValues = this.toDvalueState(obj.dynabute_values, fields);
-        delete obj.dynabute_values
-        this.setState({fields, obj, dynabuteValues})
-      });
+    const {fields, values, obj} = this.props;
+    this.originalDvalues = values.slice();
+    const dynabuteValues = this.toDvalueState(values, fields);
+    this.state = {fields, obj, dynabuteValues, errors: []}
 
-    this.onChange = this.onChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
     this.onAdd = this.onAdd.bind(this)
     this.onRemove = this.onRemove.bind(this)
+    this.onChange = this.onChange.bind(this)
+    this.onNameChange = this.onNameChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
   onAdd(fieldId){
     const values = this.state.dynabuteValues[fieldId].concat({field_id: fieldId, value: ''});
     const dynabuteValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
-    console.log("-", dynabuteValues)
     this.setState({dynabuteValues})
   }
 
@@ -42,20 +37,30 @@ class DynabuteValueForm extends React.Component {
     this.setState({dynabuteValues})
   }
 
+  onChange(fieldId, values) {
+    const newValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
+    this.setState({dynabuteValues: newValues})
+  }
+
+  onNameChange(e){
+    const newObj = Object.assign(this.state.obj, {name: e.target.value})
+    this.setState({obj: newObj})
+  }
+
   onSubmit(){
+    this.setState({errors: []})
     const values = flatten(Object.values(this.state.dynabuteValues))
-    const params = {user: {
-      dynabute_values_attributes: values
-    }}
-    $.ajax(`/users/${this.state.obj.id}.json`, {method: 'patch', data: params}).then(
-      ()=>{
-        window.history.replaceState(null, null, '/users');
-        window.location.reload();
-      },
-      (errors)=>{
-        console.log("error!", errors)
+    const params = {
+      user: {
+        name: this.state.obj.name,
+        dynabute_values_attributes: values
       }
-    )
+    };
+    this.props.onSubmit(params)
+      .catch((err)=>{
+      this.setState({errors: err});
+        window.scrollTo(0, 0);
+    })
   }
 
   toDvalueState(rawValues, fields) {
@@ -71,18 +76,18 @@ class DynabuteValueForm extends React.Component {
     }, {})
   }
 
-  onChange(fieldId, values) {
-    const newValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
-    this.setState({dynabuteValues: newValues})
-  }
-
   render(){
     return (
       <div>
+        {this.state.errors.length > 0 &&
+          <div className="alert alert-danger">
+            {this.state.errors.map((m, i)=><div key={i}>{m}</div>)}
+          </div>
+        }
         <form>
           <div className="form-group">
             <label htmlFor="user">Name:</label>
-            <input type="text" className="form-control" id="user" />
+            <input type="text" className="form-control" id="user" value={this.state.obj.name} onChange={this.onNameChange}/>
           </div>
           {
             this.state.fields.map((f, i)=>(
@@ -113,8 +118,35 @@ class DynabuteValueForm extends React.Component {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <DynabuteValueForm/>,
-    document.getElementById('dynabute-form')
-  )
+  const elem = $('#dynabute-form');
+
+  const {controllerName, modelId} = elem.data();
+  const modelName = controllerName.slice(0, controllerName.length - 1)
+
+  const onSubmit = function(data) {
+    const method = modelId ? 'patch' : 'post';
+    const url = modelId ? `/${controllerName}/${modelId}.json` : `/${controllerName}.json`;
+    return $.ajax(url, {method, data}).then(
+      function backToindex() {
+        window.history.replaceState(null, null, `/${controllerName}`);
+        window.location.reload();
+      },
+      function passErrors(resp){
+        return new Promise((_, rj) => rj(resp.responseJSON))
+      }
+    )
+  };
+
+  const getFields = $.getJSON(`/dynabute_fields.json?target_model=${modelName}`);
+  const getModel = modelId ? $.getJSON(`/${controllerName}/${modelId}.json`) : null;
+  Promise.all([getFields, getModel])
+    .then((data) => {
+      const fields = data[0],
+        obj = data[1] || {},
+        values = obj.dynabute_values || [];
+      ReactDOM.render(
+        <DynabuteValueForm onSubmit={onSubmit} fields={fields} values={values} obj={obj} />,
+        elem[0]
+      )
+    });
 })

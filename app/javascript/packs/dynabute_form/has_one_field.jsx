@@ -14,7 +14,7 @@ export class HasOneField extends React.Component{
   }
 
   extractValue(e, idx) {
-    const {field_id, value_type} = this.props.field
+    const {value_type} = this.props.field
     switch(value_type) {
       case 'select':
         return Object.assign(this.props.value, {value: parseInt(e.target.value)})
@@ -27,7 +27,7 @@ export class HasOneField extends React.Component{
     const {id, name, options, value_type: valueType, has_many: hasMany} = field
     const elemId = `field-${id}`;
     const value = this.props.value
-    switch(valueType){
+    switch(valueType) {
       case 'integer':
       case 'string':
         const type = valueType == 'integer' ? 'number' : 'text';
@@ -41,7 +41,7 @@ export class HasOneField extends React.Component{
         return (
           <div className="checkbox">
             <label>
-              <input type="checkbox" value="checkboxA" /> {name}
+              <input type="checkbox" value="checkboxA"  onChange={this.onChange}/> {name}
             </label>
           </div>
         )

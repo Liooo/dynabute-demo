@@ -62,10 +62,10 @@ export class HasManyField extends React.Component{
                   if(v._destroy) return null;
                   return (
                     <div className="row" key={idx}>
-                      <div className="col-lg-3 form-group">
+                      <div className="col-sm-3 form-group">
                         <input type={type} className="form-control" value={v.value} onChange={(e) => this.onChange(e, idx)}/>
                       </div>
-                      <div className="col-lg-1" style={{paddingTop: 5}}>
+                      <div className="col-sm-1" style={{paddingTop: 5}}>
                         <button type="button" className="btn btn-xs btn-danger" onClick={() => this.onRemove(idx)}>remove</button>
                       </div>
                     </div>

@@ -1,2 +1,9 @@
-= javascript_pack_tag 'dynabute_form/form'
 div#dynabute-form
+= javascript_pack_tag 'dynabute_form/form'
+
+javascript:
+  $('#dynabute-form').data({
+    modelId: #{raw @user.id.to_json.html_safe},
+    controllerName: #{raw controller_name.to_json.html_safe}
+  });
+
