@@ -69,6 +69,7 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
+      puts params.permit!
       params.require(:user).permit(:name, dynabute_values_attributes: [:id, :value, :field_id, :name, :_destroy])
     end
 end

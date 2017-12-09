@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { DynabuteValueField } from './field'
-import {map} from 'lodash'
+import {HasOneField} from "./has_one_field";
+import {HasManyField} from "./has_many_field";
+import {flatten} from 'lodash'
 
 class DynabuteValueForm extends React.Component {
   constructor(props) {
@@ -19,48 +20,51 @@ class DynabuteValueForm extends React.Component {
 
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.onAdd = this.onAdd.bind(this)
+    this.onRemove = this.onRemove.bind(this)
+  }
+
+  onAdd(fieldId){
+    const values = this.state.dynabuteValues[fieldId].concat({field_id: fieldId, value: ''});
+    const dynabuteValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
+    console.log("-", dynabuteValues)
+    this.setState({dynabuteValues})
+  }
+
+  onRemove(fieldId, idx){
+    const values = this.state.dynabuteValues[fieldId]
+    if(values[idx].id) {
+      values[idx]._destroy = true
+    } else {
+      values.splice(idx, 1);
+    }
+    const dynabuteValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values})
+    this.setState({dynabuteValues})
   }
 
   onSubmit(){
-    const dParams = this.toDvalueParams(this.state.fields, this.state.dynabuteValues);
+    const values = flatten(Object.values(this.state.dynabuteValues))
     const params = {user: {
-      dynabute_values_attributes: dParams
+      dynabute_values_attributes: values
     }}
-    $.ajax(`/users/${this.state.obj.id}`, {method: 'patch', data: params}).then(()=>{
-      location.href = '/users'
-    })
-  }
-
-  toDvalueParams(fields, values){
-    return _(fields).map((f)=>{
-      const newValue = values[f.id]
-      if(f.has_many) {
-        const origDvalue = this.originalDvalues.filter((v) => v.field_id == f.id)
-        const added = _.difference(newValue, origDvalue.map((d) => d.value))
-        const removed = _.difference(origDvalue.map((d) => d.value), newValue)
-        return [
-          ...origDvalue.map((d) => {
-            if(removed.includes(d.value)) { d._destroy = true; }
-            return d;
-          }),
-          ...added.map((value) => ({field_id: f.id, value}))
-        ]
-      } else {
-        if(!newValue) { return null; }
-        const origDvalue = this.originalDvalues.find((v) => v.field_id == f.id) || {};
-        return Object.assign(origDvalue, {value: newValue, field_id: f.id});
+    $.ajax(`/users/${this.state.obj.id}.json`, {method: 'patch', data: params}).then(
+      ()=>{
+        window.history.replaceState(null, null, '/users');
+        window.location.reload();
+      },
+      (errors)=>{
+        console.log("error!", errors)
       }
-    }).flatten().compact().value();
+    )
   }
 
   toDvalueState(rawValues, fields) {
     return fields.reduce((hash, f) => {
       let value;
       if(f.has_many) {
-        value = rawValues.filter((v) => v.field_id == f.id).map((v) => v.value)
-      } else{
-        const v = rawValues.find((v) => v.field_id == f.id);
-        value = v ? v.value : ''
+        value = rawValues.filter((v) => v.field_id == f.id)
+      } else {
+        value = rawValues.find((v) => v.field_id == f.id) || {field_id: f.id, value: ''}
       }
       hash[f.id] = value;
       return hash;
@@ -83,11 +87,21 @@ class DynabuteValueForm extends React.Component {
           {
             this.state.fields.map((f, i)=>(
               <div style={{marginBottom: 30}} key={f.id}>
-                <DynabuteValueField
-                  field={f}
-                  value={this.state.dynabuteValues[f.id]}
-                  onChange={this.onChange}
-                />
+                {f.has_many ?
+                  <HasManyField
+                    field={f}
+                    value={this.state.dynabuteValues[f.id]}
+                    onChange={this.onChange}
+                    onAdd={this.onAdd}
+                    onRemove={this.onRemove}
+                  />
+                  :
+                  <HasOneField
+                    field={f}
+                    value={this.state.dynabuteValues[f.id]}
+                    onChange={this.onChange}
+                  />
+                }
               </div>
             ))
           }
