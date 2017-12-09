@@ -1,2 +1,6 @@
-json.extract! article, :id, :title, :body, :user_id, :created_at, :updated_at
-json.url article_url(article, format: :json)
+json.extract! article, :id, :name, :created_at, :updated_at
+json.dynabute_values do
+  json.array! article.dynabute_values do |value|
+    json.extract! value, :id, :value, :field_id
+  end
+end

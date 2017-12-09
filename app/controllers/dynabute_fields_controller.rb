@@ -1,6 +1,7 @@
 class DynabuteFieldsController < ApplicationController
   before_action :set_dynabute, only: [:show, :edit, :update, :destroy]
   before_action :set_target_model, only: [:index]
+  ALLOWED_MODELS = %w(user article)
 
   # GET /dynabute_fields
   # GET /dynabute_fields.json
@@ -83,6 +84,7 @@ class DynabuteFieldsController < ApplicationController
     end
 
     def set_target_model
+      return render file: "#{Rails.root}/public/404.html", layout: false, status: 404 unless ALLOWED_MODELS.include?(target_model.downcase)
       @target_model = target_model.downcase
     end
 

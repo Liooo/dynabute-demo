@@ -53,10 +53,8 @@ class DynabuteValueForm extends React.Component {
     this.setState({errors: []})
     const values = flatten(Object.values(this.state.dynabuteValues))
     const params = {
-      user: {
-        name: this.state.obj.name,
-        dynabute_values_attributes: values
-      }
+      name: this.state.obj.name,
+      dynabute_values_attributes: values
     };
     this.props.onSubmit(params)
       .catch((err)=>{
@@ -88,8 +86,8 @@ class DynabuteValueForm extends React.Component {
         }
         <form>
           <div className="form-group">
-            <label htmlFor="user">Name:</label>
-            <input type="text" className="form-control" id="user" value={this.state.obj.name} onChange={this.onNameChange}/>
+            <label htmlFor="name">Name:</label>
+            <input type="text" className="form-control" id="name" value={this.state.obj.name} onChange={this.onNameChange}/>
           </div>
           {
             this.state.fields.map((f, i)=>(
@@ -126,9 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const {controllerName, modelId} = elem.data();
   const modelName = controllerName.slice(0, controllerName.length - 1)
 
-  const onSubmit = function(data) {
+  const onSubmit = function(params) {
     const method = modelId ? 'patch' : 'post';
     const url = modelId ? `/${controllerName}/${modelId}.json` : `/${controllerName}.json`;
+    const data = {[modelName]: params}
     return $.ajax(url, {method, data}).then(
       function backToindex() {
         window.history.replaceState(null, null, `/${controllerName}`);

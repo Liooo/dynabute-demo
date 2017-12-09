@@ -3,17 +3,9 @@
   h1=t '.title', :default => model_class.model_name.human.titleize
 
 p
-  strong= model_class.human_attribute_name(:title) + ':'
+  strong= model_class.human_attribute_name(:name) + ':'
   br
-  = @article.title
-p
-  strong= model_class.human_attribute_name(:body) + ':'
-  br
-  = @article.body
-p
-  strong= model_class.human_attribute_name(:user_id) + ':'
-  br
-  = @article.user_id
+  = @article.name
 
 = link_to t('.back', :default => t("helpers.links.back")), articles_path, :class => 'btn btn-default'
 '
