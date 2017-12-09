@@ -20,9 +20,11 @@ class DynabuteValueForm extends React.Component {
     this.onSubmit = this.onSubmit.bind(this)
   }
 
-  onAdd(fieldId){
-    const values = this.state.dynabuteValues[fieldId].concat({field_id: fieldId, value: ''});
-    const dynabuteValues = Object.assign(this.state.dynabuteValues, {[fieldId]: values});
+  onAdd(field){
+    const {id, value_type} = field;
+    const initialVal = value_type == 'boolean' ? false : ''
+    const values = this.state.dynabuteValues[id].concat({field_id: id, value: initialVal});
+    const dynabuteValues = Object.assign(this.state.dynabuteValues, {[id]: values});
     this.setState({dynabuteValues})
   }
 
@@ -110,7 +112,8 @@ class DynabuteValueForm extends React.Component {
               </div>
             ))
           }
-          <button type="button" className="btn btn-primary" onClick={this.onSubmit}>yo</button>
+          <button type="button" className="btn btn-primary" onClick={this.onSubmit}>Save</button>
+          <a href={this.props.cancelLink} style={{marginLeft: 10}} className="btn btn-default">Cancel</a>
         </form>
       </div>
     )
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         obj = data[1] || {},
         values = obj.dynabute_values || [];
       ReactDOM.render(
-        <DynabuteValueForm onSubmit={onSubmit} fields={fields} values={values} obj={obj} />,
+        <DynabuteValueForm onSubmit={onSubmit} cancelLink={`/${controllerName}`} fields={fields} values={values} obj={obj} />,
         elem[0]
       )
     });

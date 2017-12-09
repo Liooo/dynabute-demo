@@ -1,4 +1,5 @@
 import React from 'react'
+import {toDatetimeLocalStr} from "./util";
 
 export class HasOneField extends React.Component{
 
@@ -15,33 +16,39 @@ export class HasOneField extends React.Component{
 
   extractValue(e, idx) {
     const {value_type} = this.props.field
+    let value;
     switch(value_type) {
       case 'select':
         return Object.assign(this.props.value, {value: parseInt(e.target.value)})
+      case 'boolean':
+        return Object.assign(this.props.value, {value: e.target.checked})
       default:
         return Object.assign(this.props.value, {value: e.target.value})
     }
   }
 
   renderField(field){
-    const {id, name, options, value_type: valueType, has_many: hasMany} = field
+    const {id, name, options, value_type: valueType} = field
     const elemId = `field-${id}`;
-    const value = this.props.value
+    let value = this.props.value.value;
+
     switch(valueType) {
       case 'integer':
       case 'string':
-        const type = valueType == 'integer' ? 'number' : 'text';
+      case 'datetime':
+        const type = {integer: 'number', string: 'text', datetime: 'datetime-local'}[valueType];
+        value = valueType == 'datetime' ? toDatetimeLocalStr(value) : value;
         return (
           <div className="form-group">
             <label htmlFor={elemId}>{name}</label>
-            <input type={type} className="form-control" id={elemId} onChange={this.onChange}/>
+            <input type={type} className="form-control" id={elemId} onChange={this.onChange} value={value} />
           </div>
-        )
+        );
       case 'boolean':
         return (
           <div className="checkbox">
             <label>
-              <input type="checkbox" value="checkboxA"  onChange={this.onChange}/> {name}
+              <input type="checkbox" checked={value} onChange={this.onChange}/> {name}
             </label>
           </div>
         )
@@ -60,10 +67,9 @@ export class HasOneField extends React.Component{
   }
 
   render(){
-    const {field} = this.props
     return (
       <div>
-        {this.renderField(field)}
+        {this.renderField(this.props.field)}
       </div>
     )
   }

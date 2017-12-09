@@ -1,5 +1,6 @@
 import React from 'react'
 import {zip, map} from 'lodash'
+import {toDatetimeLocalStr} from "./util";
 
 export class HasManyField extends React.Component{
 
@@ -31,9 +32,11 @@ export class HasManyField extends React.Component{
           }
         })
       default:
-        const val = this.props.value.slice();
-        val.splice(idx, 1, {field_id, value: e.target.value});
-        return val
+        const values = this.props.value.slice();
+        const accessor = value_type == 'boolean' ? 'checked' : 'value'
+        const newValue = Object.assign(values[idx], {field_id, value: e.target[accessor]})
+        values.splice(idx, 1, newValue);
+        return values
     }
   }
 
@@ -42,48 +45,68 @@ export class HasManyField extends React.Component{
   }
 
   onAdd(){
-    this.props.onAdd(this.props.field.id);
+    this.props.onAdd(this.props.field);
+  }
+
+  buildBooleanInputGetter(onChange) {
+    return function getInput(value, idx) {
+      return (
+        <div className="col-sm-3">
+          <input type="checkbox" checked={value} onChange={(e) => onChange(e, idx)}/>
+        </div>
+      )
+    }
+  }
+
+  buildTextInputGetter(type, onChange) {
+    return function getInput(value, idx) {
+      return (
+        <div className="col-sm-3 form-group">
+          <input type={type} className="form-control" value={value} onChange={(e) => onChange(e, idx)}/>
+        </div>
+      )
+    }
+  }
+
+  renderMany(legend, getInput, values){
+    return (
+      <div style={{borderBottom: '1px solid #e5e5e5', paddingBottom: 10}}>
+        <fieldset>
+          <legend>{legend}</legend>
+          {
+            values.map((v, idx) => {
+              if(v._destroy) return null;
+              return (
+                <div className="row" key={idx}>
+                  { getInput(v.value, idx) }
+                  <div className="col-sm-1" style={{paddingTop: 5}}>
+                    <button type="button" className="btn btn-xs btn-danger" onClick={() => this.onRemove(idx)}>remove</button>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </fieldset>
+        <button className="btn btn-xs btn-success" type="button" onClick={this.onAdd}>add</button>
+      </div>
+    )
   }
 
   renderField(field){
-    const {id, name, options, value_type: valueType, has_many: hasMany} = field
+    const {id, name, options, value_type: valueType} = field
     const elemId = `field-${id}`;
-    const values = this.props.value
+    let values = this.props.value;
     switch(valueType){
       case 'integer':
       case 'string':
-        const type = valueType == 'integer' ? 'number' : 'text';
-        return (
-          <div style={{borderBottom: '1px solid #e5e5e5', paddingBottom: 10}}>
-            <fieldset>
-              <legend>{name}</legend>
-              {
-                values.map((v, idx) => {
-                  if(v._destroy) return null;
-                  return (
-                    <div className="row" key={idx}>
-                      <div className="col-sm-3 form-group">
-                        <input type={type} className="form-control" value={v.value} onChange={(e) => this.onChange(e, idx)}/>
-                      </div>
-                      <div className="col-sm-1" style={{paddingTop: 5}}>
-                        <button type="button" className="btn btn-xs btn-danger" onClick={() => this.onRemove(idx)}>remove</button>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-            </fieldset>
-            <button className="btn btn-xs btn-success" type="button" onClick={this.onAdd}>add</button>
-          </div>
-        )
+      case 'datetime':
+        const inputType = {integer: 'number', string: 'text', datetime: 'datetime-local'}[valueType];
+        values = valueType == 'datetime' ?
+          values.map((v)=>Object.assign(v, {value: toDatetimeLocalStr(v.value)})) :
+          values;
+        return this.renderMany(name, this.buildTextInputGetter(inputType, this.onChange), values);
       case 'boolean':
-        return (
-          <div className="checkbox">
-            <label>
-              <input type="checkbox" value="checkboxA" /> {name}
-            </label>
-          </div>
-        )
+        return this.renderMany(name, this.buildBooleanInputGetter(this.onChange), values);
       case 'select':
         return (
           <div className="form-group">
@@ -100,10 +123,9 @@ export class HasManyField extends React.Component{
   }
 
   render(){
-    const {field} = this.props
     return (
       <div>
-        {this.renderField(field)}
+        {this.renderField(this.props.field)}
       </div>
     )
   }
