@@ -1,5 +1,5 @@
 class DynabuteFieldsController < ApplicationController
-  before_action :set_dynabute, only: [:show, :edit, :update, :destroy]
+  before_action :set_dynabute, only: [:show, :destroy]
   before_action :set_target_model, only: [:index]
   ALLOWED_MODELS = %w(user article)
 
@@ -19,10 +19,6 @@ class DynabuteFieldsController < ApplicationController
     @dynabute_field= Dynabute::Field.new(target_model: target_model)
   end
 
-  # GET /dynabute_fields/1/edit
-  def edit
-  end
-
   # POST /dynabute_fields
   # POST /dynabute_fields.json
   def create
@@ -34,20 +30,6 @@ class DynabuteFieldsController < ApplicationController
         format.json { render :show, status: :created, location: @dynabute_field}
       else
         format.html { render :new }
-        format.json { render json: @dynabute_field.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /dynabute_fields/1
-  # PATCH/PUT /dynabute_fields/1.json
-  def update
-    respond_to do |format|
-      if @dynabute_field.update(dynabute_params)
-        format.html { redirect_to dynabute_fields_path(@dynabute_field.target_model), notice: 'Dynabute was successfully updated.' }
-        format.json { render :show, status: :ok, location: @dynabute_field}
-      else
-        format.html { render :edit }
         format.json { render json: @dynabute_field.errors, status: :unprocessable_entity }
       end
     end
